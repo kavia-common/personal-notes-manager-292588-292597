@@ -1,0 +1,203 @@
+:root {
+  --primary: #2563EB;
+  --secondary: #F59E0B;
+  --error: #EF4444;
+  --background: #f9fafb;
+  --surface: #ffffff;
+  --text: #111827;
+
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  color: var(--text);
+  background: var(--background);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+a { color: inherit; }
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .12s ease, box-shadow .2s ease, background .2s ease, color .2s ease, opacity .2s ease, border-color .2s ease;
+}
+
+button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+button:active { transform: translateY(0); }
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(243,244,246,0.8));
+  border: 1px solid rgba(37,99,235,0.25);
+  color: #0b3aa7;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgba(37,99,235,0.18), rgba(243,244,246,1));
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(243,244,246,0.8));
+  border: 1px solid rgba(245,158,11,0.25);
+  color: #8a5405;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(243,244,246,0.8));
+  border: 1px solid rgba(239,68,68,0.25);
+  color: #7a1010;
+}
+
+input[type="text"], textarea {
+  width: 100%;
+  border: 1px solid rgba(17,24,39,0.12);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+  outline: none;
+}
+
+input[type="text"]:focus, textarea:focus {
+  border-color: rgba(37,99,235,0.45);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: rgba(17,24,39,0.8);
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  height: 100vh;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid rgba(17,24,39,0.08);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(17,24,39,0.08);
+  background: linear-gradient(180deg, rgba(37,99,235,0.06), rgba(255,255,255,0));
+}
+
+.sidebar-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.sidebar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.note-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.note-list-item {
+  border: 1px solid rgba(17,24,39,0.08);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 8px 8px 0;
+  background: white;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: background .2s ease, box-shadow .2s ease, transform .12s ease, border-color .2s ease;
+}
+.note-list-item:hover {
+  background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(255,255,255,1));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.note-list-item.active {
+  border-color: rgba(37,99,235,0.45);
+  background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(255,255,255,1));
+}
+
+.note-title {
+  font-weight: 600;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.note-date {
+  margin: 4px 0 0;
+  color: rgba(17,24,39,0.55);
+  font-size: 0.8rem;
+}
+
+.main {
+  padding: 24px;
+  background: radial-gradient(1200px 600px at -10% -10%, rgba(37,99,235,0.10), transparent),
+              linear-gradient(180deg, rgba(243,244,246,0.6), rgba(249,250,251,0.6));
+  height: 100%;
+  overflow: auto;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(17,24,39,0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 18px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: rgba(17,24,39,0.6);
+}
+
+.helper {
+  color: rgba(17,24,39,0.55);
+  font-size: 0.85rem;
+}
+
+.hidden { display: none !important; }
