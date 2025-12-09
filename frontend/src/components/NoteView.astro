@@ -1,0 +1,71 @@
+---
+import { humanDate } from "../lib/notesStore";
+const init = `
+(function(){
+  const store = window.notesStore;
+  const container = document.querySelector('[data-view]');
+  const titleEl = container.querySelector('[data-title]');
+  const dateEl = container.querySelector('[data-date]');
+  const contentEl = container.querySelector('[data-content]');
+  const emptyEl = document.querySelector('[data-view-empty]');
+  const editBtn = container.querySelector('[data-edit]');
+  const deleteBtn = container.querySelector('[data-delete]');
+
+  function render() {
+    const state = store.getState();
+    const note = state.notes.find(n => n.id === state.selectedId);
+    if (!note) {
+      container.classList.add('hidden');
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+    container.classList.remove('hidden');
+    emptyEl.classList.add('hidden');
+    titleEl.textContent = note.title || 'Untitled';
+    dateEl.textContent = window.__humanDate(note.updatedAt);
+    contentEl.textContent = note.content || 'No content';
+  }
+
+  store.subscribe(render);
+  render();
+
+  editBtn?.addEventListener('click', () => {
+    document.querySelector('[data-editor]')?.classList.remove('hidden');
+    document.querySelector('[data-view]')?.classList.add('hidden');
+    // preload editor fields handled by NoteEditor
+    document.dispatchEvent(new CustomEvent('open-editor'));
+  });
+
+  deleteBtn?.addEventListener('click', async () => {
+    const state = store.getState();
+    const id = state.selectedId;
+    if (!id) return;
+    if (confirm('Delete this note? This action cannot be undone.')) {
+      await store.remove(id);
+    }
+  });
+})();
+`;
+---
+
+<section aria-label="Selected note" class="card" data-view>
+  <div class="header-row">
+    <div>
+      <h1 style="margin:0;font-size:1.5rem;" data-title>Untitled</h1>
+      <p class="note-date" data-date></p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary" data-edit aria-label="Edit note">Edit</button>
+      <button class="btn-danger" data-delete aria-label="Delete note">Delete</button>
+    </div>
+  </div>
+  <div style="margin-top:16px; white-space:pre-wrap; line-height:1.6;" data-content></div>
+</section>
+
+<div class="empty card" data-view-empty>
+  Select a note from the sidebar, or create a new one to get started.
+</div>
+
+<script is:inline>
+  {init}
+</script>

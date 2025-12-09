@@ -1,11 +1,35 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Sidebar from "../components/Sidebar.astro";
+import NoteView from "../components/NoteView.astro";
+import NoteEditor from "../components/NoteEditor.astro";
+import "../styles/global.css";
 ---
 
 <Layout>
-	<Welcome />
+  <div class="app-shell">
+    <script is:inline>
+      import("../lib/notesStore.ts").then(async (m) => {
+        // Expose store globally for simple component scripts
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).notesStore = m.notesStore;
+        await m.notesStore.init();
+      });
+    </script>
+
+    <!-- Sidebar -->
+    <Sidebar />
+
+    <!-- Main content -->
+    <main class="main">
+      <div class="card" style="margin-bottom:16px; background: linear-gradient(135deg, rgba(37,99,235,0.10), rgba(243,244,246,0.6)); border: 1px solid rgba(37,99,235,0.2);">
+        <h1 style="margin:0;">Notes Manager</h1>
+        <p class="helper">Create, view, edit, and delete personal notes. Data is stored in your browser.</p>
+      </div>
+
+      <!-- Note View and Editor -->
+      <NoteView />
+      <NoteEditor />
+    </main>
+  </div>
 </Layout>

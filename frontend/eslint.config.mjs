@@ -1,9 +1,14 @@
-// eslint.config.mjs
+/* eslint.config.mjs */
 import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default [
+  // Ignore generated and build outputs
+  {
+    ignores: ['dist/**', '.astro/**'],
+  },
+
   js.configs.recommended,
 
   // TypeScript support
@@ -14,19 +19,22 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json',
+        // Do not use project mode to avoid parsing generated files outside project scope
         ecmaVersion: 2022,
         sourceType: 'module',
       },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
     rules: {
-      // Example custom rules for TS
       '@typescript-eslint/no-unused-vars': ['warn'],
       '@typescript-eslint/explicit-function-return-type': 'off',
     },
   },
 
-  // JS files config (same as before)
+  // JS files config
   {
     files: ['**/*.js', '**/*.jsx'],
     languageOptions: {
@@ -40,7 +48,7 @@ export default [
     rules: {
       'no-unused-vars': 'warn',
       'no-console': 'off',
-      'eqeqeq': ['error', 'always'],
+      eqeqeq: ['error', 'always'],
     },
   },
 ];

@@ -1,0 +1,107 @@
+---
+import type { Note, NotesState } from "../lib/notesStore";
+import { notesStore, humanDate } from "../lib/notesStore";
+
+// Local, client-only behavior for interactivity
+const init = `
+  (function(){
+    const store = window.__notesStore;
+    const listEl = document.querySelector('[data-note-list]');
+    const createBtn = document.querySelector('[data-create]');
+    const searchInput = document.querySelector('[data-search]');
+    const emptyEl = document.querySelector('[data-empty]');
+    const countEl = document.querySelector('[data-count]');
+    let state = store.getState();
+    let filter = '';
+
+    function render() {
+      state = store.getState();
+      const notes = state.notes.filter(n => n.title.toLowerCase().includes(filter));
+      listEl.innerHTML = '';
+      if (countEl) countEl.textContent = String(state.notes.length);
+      if (!notes.length) {
+        emptyEl.classList.remove('hidden');
+      } else {
+        emptyEl.classList.add('hidden');
+      }
+      for (const n of notes) {
+        const li = document.createElement('li');
+        li.className = 'note-list-item' + (state.selectedId === n.id ? ' active' : '');
+        li.setAttribute('role', 'button');
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('aria-pressed', state.selectedId === n.id ? 'true' : 'false');
+
+        const title = document.createElement('p');
+        title.className = 'note-title';
+        title.textContent = n.title || 'Untitled';
+
+        const date = document.createElement('p');
+        date.className = 'note-date';
+        date.textContent = window.__humanDate(n.updatedAt);
+
+        li.appendChild(title);
+        li.appendChild(date);
+
+        function select() { store.select(n.id); }
+        li.addEventListener('click', select);
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault(); select();
+          }
+        });
+
+        listEl.appendChild(li);
+      }
+    }
+
+    store.subscribe(render);
+    render();
+
+    createBtn?.addEventListener('click', () => {
+      store.create('New note', '');
+    });
+
+    searchInput?.addEventListener('input', (e) => {
+      filter = String(e.target.value || '').toLowerCase();
+      render();
+    });
+  })();
+`;
+---
+
+<aside class="sidebar" aria-label="Notes sidebar">
+  <div class="sidebar-header">
+    <h2 class="sidebar-title">My Notes <span class="helper">( <span data-count>0</span> )</span></h2>
+    <div class="sidebar-actions">
+      <button class="btn-primary" data-create aria-label="Create a new note">+ New</button>
+    </div>
+    <div style="margin-top:12px;">
+      <label for="search">Search</label>
+      <input id="search" data-search type="text" placeholder="Search notes..." aria-label="Search notes by title" />
+    </div>
+  </div>
+
+  <ul class="note-list" data-note-list></ul>
+
+  <div class="empty" data-empty>
+    No notes yet. Click “New” to create your first note.
+  </div>
+</aside>
+
+<script is:inline>
+  // Expose utilities to client runtime
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__humanDate = (ts) => {
+    const d = new Date(ts);
+    return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__notesStore = {
+    subscribe: (fn) => (window as any).notesStore.subscribe(fn),
+    getState: () => (window as any).notesStore.getState(),
+    create: (title, content) => (window as any).notesStore.create(title, content),
+    select: (id) => (window as any).notesStore.select(id)
+  };
+  // Initialize when store is ready (index page ensures window.notesStore present)
+  {init}
+</script>

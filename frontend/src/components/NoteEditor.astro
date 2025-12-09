@@ -1,0 +1,83 @@
+---
+const init = `
+(function(){
+  const store = window.notesStore;
+  const editor = document.querySelector('[data-editor]');
+  const titleInput = editor.querySelector('[data-field="title"]');
+  const contentInput = editor.querySelector('[data-field="content"]');
+  const saveBtn = editor.querySelector('[data-save]');
+  const cancelBtn = editor.querySelector('[data-cancel]');
+
+  function loadCurrent() {
+    const state = store.getState();
+    const note = state.notes.find(n => n.id === state.selectedId);
+    if (!note) {
+      titleInput.value = '';
+      contentInput.value = '';
+      return;
+    }
+    titleInput.value = note.title || '';
+    contentInput.value = note.content || '';
+  }
+
+  document.addEventListener('open-editor', loadCurrent);
+
+  saveBtn?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const state = store.getState();
+    const id = state.selectedId;
+    const title = titleInput.value.trim() || 'Untitled';
+    const content = contentInput.value;
+    if (id) {
+      await store.update(id, { title, content });
+    } else {
+      const created = await store.create(title, content);
+      store.select(created.id);
+    }
+    editor.classList.add('hidden');
+    document.querySelector('[data-view]')?.classList.remove('hidden');
+  });
+
+  cancelBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    editor.classList.add('hidden');
+    document.querySelector('[data-view]')?.classList.remove('hidden');
+  });
+
+  // Show editor when creating a brand new note
+  const createBtn = document.querySelector('[data-create]');
+  createBtn?.addEventListener('click', () => {
+    // Delay to ensure selection set by store.create
+    setTimeout(() => {
+      loadCurrent();
+      editor.classList.remove('hidden');
+      document.querySelector('[data-view]')?.classList.add('hidden');
+      titleInput.focus();
+    }, 10);
+  });
+
+})();
+`;
+---
+
+<section aria-label="Edit note" class="card hidden" data-editor>
+  <h2 style="margin-top:0;">Edit Note</h2>
+  <form>
+    <div style="margin-bottom:12px;">
+      <label for="title">Title</label>
+      <input id="title" data-field="title" type="text" placeholder="Note title" />
+    </div>
+    <div style="margin-bottom:12px;">
+      <label for="content">Content</label>
+      <textarea id="content" data-field="content" rows="10" placeholder="Write your note..."></textarea>
+    </div>
+    <div class="header-actions" style="justify-content:flex-end;">
+      <button class="btn-secondary" data-cancel aria-label="Cancel editing">Cancel</button>
+      <button class="btn-primary" data-save aria-label="Save note">Save</button>
+    </div>
+  </form>
+</section>
+
+<script is:inline>
+  {init}
+</script>
